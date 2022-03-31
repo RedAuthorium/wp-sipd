@@ -109,6 +109,7 @@ class Post_Meta_Container extends Container {
 		$this->set_post_id( $post_id );
 
 		foreach ( $this->fields as $field ) {
+			nwa_writelog(json_encode($field));
 			$field->set_value_from_input( Helper::input() );
 			$field->save();
 		}

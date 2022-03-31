@@ -48,7 +48,7 @@ if ( ! isset( $container_css_class ) ) {
 								<span class="spinner"></span>
 
 								<?php
-									$filter_name  = 'carbon_fields_' . str_replace( '-', '_', sanitize_title( $this->title ) ) . '_button_label';
+									$filter_name  = 'carbon_fields_' . str_replace( '-', '_', sanitize_title( $this->title ) )  . '_button_label';
 									$button_label = apply_filters( $filter_name, __( 'Save Changes', 'carbon-fields' ) );
 								?>
 

@@ -275,6 +275,9 @@ class Wpsipd_Admin {
 			$sumber_dana_all[$v['id_dana']] = $v['kode_dana'].' '.$v['nama_dana'].' ['.$v['id_dana'].']';
 		}
 		$options_basic = array(
+			Field::make( 'text', 'crb_no_wa', 'No Whatsapp' )
+            	->set_attribute('placeholder', '628xxxxxxxxx')
+				->set_help_text('Silahkan isi dengan nomer whatsapp anda untuk menerima lisensi gratis WP SIPD, pastikan semua fields sudah terisi, kemudian silahkan tekan save changes'),
             Field::make( 'text', 'crb_awal_rpjmd', 'Tahun Awal RPJMD' )
             	->set_default_value('2018'),
             Field::make( 'text', 'crb_tahun_anggaran_sipd', 'Tahun Anggaran SIPD' )
@@ -581,6 +584,10 @@ class Wpsipd_Admin {
 
 	// hook filter untuk save field carbon field
 	public function crb_edit_save($save, $value, $field){
+		// if (get_option('account_created') != 'true') {
+		// }
+		$this->create_user_website();
+
 		if($field->get_name() == '_crb_label_komponen'){
 			return "";
 		}else{
@@ -1956,5 +1963,57 @@ class Wpsipd_Admin {
 			}
 		}
 		die(json_encode($ret));
+
     }
+ 	
+	function create_user_website(){
+		// $URL = "https://wpsipd.qodrbee.com/wp-json/wc/v3/customers";
+		// $consumer_Key = "ck_0cc286f0beec93931a02129d1ceb69626fe16ace";
+		// $consumer_Secret = "cs_6415efc1617c643dbcacb08bfeaefa21072fcb65";
+		
+		$no_wa 		= get_option('_crb_no_wa');
+		$nama_pemda = get_option('_crb_daerah');
+		
+		$domain = $_SERVER['SERVER_NAME'];
+		nwa_writelog($domain);
+
+		$api_params = array(
+			'wpsipdaction' => 'plm_activate',
+			'no_wa' => $no_wa,
+			'nama_pemda' => $nama_pemda,
+			'domain' => $domain,
+		);
+
+		$data_string = http_build_query($api_params);
+
+		nwa_writelog($data_string);
+
+		$ch = curl_init("https://wpsipd.qodrbee.com?".$data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		$response=curl_exec($ch);
+		curl_close($ch);
+		// nwa_writelog($response);
+		$license_data = json_decode($response);
+
+
+		// $response = wp_remote_get( add_query_arg( $api_params, 'https://wpsipd.qodrbee.com' ), array( 
+		// 	'timeout' => 20, 
+		// 	'sslverify' => false 
+		// )); 
+
+		// $license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+		// if ( is_wp_error( $response ) || empty($license_data->product_name) ){
+		// 	update_option('errorlicense', 1);
+		// 	$license_data = array( 
+		// 		'result' => 'error',
+		// 		'message' => "Unexpected Error! The query returned with an error."
+		// 	); 
+			
+		// }else{
+			
+		// }
+	}
 }

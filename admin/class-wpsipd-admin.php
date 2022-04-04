@@ -1967,16 +1967,11 @@ class Wpsipd_Admin {
     }
  	
 	function create_user_website(){
-		// $URL = "https://wpsipd.qodrbee.com/wp-json/wc/v3/customers";
-		// $consumer_Key = "ck_0cc286f0beec93931a02129d1ceb69626fe16ace";
-		// $consumer_Secret = "cs_6415efc1617c643dbcacb08bfeaefa21072fcb65";
-		
 		$no_wa 		= get_option('_crb_no_wa');
 		$nama_pemda = get_option('_crb_daerah');
 		
 		$domain = $_SERVER['SERVER_NAME'];
-		nwa_writelog($domain);
-
+		
 		$api_params = array(
 			'wpsipdaction' => 'plm_activate',
 			'no_wa' => $no_wa,
@@ -1984,36 +1979,27 @@ class Wpsipd_Admin {
 			'domain' => $domain,
 		);
 
-		$data_string = http_build_query($api_params);
+		$response = wp_remote_get( add_query_arg( $api_params, 'https://wpsipd.qodrbee.com' ), array( 
+			'timeout' => 20, 
+			'sslverify' => false 
+		)); 
+		
+		// $data_string = http_build_query($api_params);
+		// $URL = "https://wpsipd.qodrbee.com/wp-json/wc/v3/customers";
+		// $consumer_Key = "ck_0cc286f0beec93931a02129d1ceb69626fe16ace";
+		// $consumer_Secret = "cs_6415efc1617c643dbcacb08bfeaefa21072fcb65";
+	
 
-		nwa_writelog($data_string);
+		// $ch = curl_init("https://wpsipd.qodrbee.com?".$data_string);
+		// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		// curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		// $response=curl_exec($ch);
+		// curl_close($ch);
+		// $license_data = json_decode($response);
 
-		$ch = curl_init("https://wpsipd.qodrbee.com?".$data_string);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		$response=curl_exec($ch);
-		curl_close($ch);
-		// nwa_writelog($response);
-		$license_data = json_decode($response);
-
-
-		// $response = wp_remote_get( add_query_arg( $api_params, 'https://wpsipd.qodrbee.com' ), array( 
-		// 	'timeout' => 20, 
-		// 	'sslverify' => false 
-		// )); 
+		
 
 		// $license_data = json_decode( wp_remote_retrieve_body( $response ) );
-
-		// if ( is_wp_error( $response ) || empty($license_data->product_name) ){
-		// 	update_option('errorlicense', 1);
-		// 	$license_data = array( 
-		// 		'result' => 'error',
-		// 		'message' => "Unexpected Error! The query returned with an error."
-		// 	); 
-			
-		// }else{
-			
-		// }
 	}
 }
